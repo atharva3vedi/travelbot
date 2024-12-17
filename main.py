@@ -1,8 +1,15 @@
 import datetime  # Add this line to import datetime
 import streamlit as st
-from pprint import pprint
-from StateAndNodes import GraphState
+import os
+
+# Set environment variables if not already set
+env_vars = {"GROQ_API_KEY", "TAVILY_API_KEY"}
+for var in env_vars:
+    if var not in os.environ:
+        os.environ[var] = st.secrets[var]
+
 from workflow import app
+
 
 # Default date range and today's date for validation
 today = datetime.datetime.now().date()  # Now works because datetime is imported
