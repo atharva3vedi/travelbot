@@ -1,0 +1,168 @@
+{
+    "name": "The Park, New Delhi",
+    "website": "https://www.theparkhotels.com/new-delhi/",
+    "address": "15, Parliament Street, New Delhi, Delhi - 110001",
+    "phone": "+91 11 2374 3000",
+    "email": "resv.del@theparkhotels.com",
+    "fax": "+91 11 2374 4000",
+    "rooms": [
+        {
+            "type": "Luxury Room",
+            "amenities": [
+                "In-room temperature control",
+                "Complimentary Wi-Fi",
+                "Tea/Coffee maker",
+                "Complimentary seasonal fruits",
+                "Mini bar",
+                "In-room safe",
+                "Complimentary newspaper",
+                "43 inch LED TV"
+            ],
+            "bed": [
+                "Double"
+            ],
+            "size": "244 sq. ft.",
+            "view": "Pool View"
+        },
+        {
+            "type": "Luxury Premium Room",
+            "amenities": [
+                "In-room temperature control",
+                "Complimentary Wi-Fi",
+                "Tea/Coffee maker",
+                "Complimentary mineral water",
+                "Complimentary seasonal fruits",
+                "Mini bar",
+                "In-room safe",
+                "Complimentary newspaper",
+                "43 inch LED TV"
+            ],
+            "bed": [
+                "King",
+                "Twin"
+            ],
+            "size": "316 sq. ft.",
+            "view": "Views of the stunning Jantar Mantar"
+        },
+        {
+            "type": "Deluxe Suite",
+            "amenities": [
+                "In-room temperature control",
+                "Complimentary Wi-Fi",
+                "Tea/Coffee maker",
+                "Complimentary mineral water",
+                "Complimentary seasonal fruits",
+                "Mini bar",
+                "In-room safe",
+                "Complimentary newspaper",
+                "43 inch LED TV",
+                "Airport transer",
+                "Complimentary wine and chocolate",
+                "Complementary power breakfast"
+            ],
+            "bed": [
+                "King"
+            ],
+            "size": "740 sq. ft.",
+            "view": "Uninterrupted city view"
+        },
+        {
+            "type": "Presidential Suite",
+            "amenities": [
+                "In-room temperature control",
+                "Complimentary Wi-Fi",
+                "Tea/Coffee maker",
+                "Complimentary mineral water",
+                "Complimentary seasonal fruits",
+                "Mini bar",
+                "High-tech In-room safe",
+                "Complimentary newspaper",
+                "43 inch LED TV",
+                "Separate living room and dining space",
+                "Airport transers by luxury sedan",
+                "Personal butler service",
+                "Complimentary wine and chocolate",
+                "Afternoon and evening cocktails",
+                "Private lounge and library"
+            ],
+            "bed": [
+                "King"
+            ],
+            "size": "1046 sq. ft."
+        },
+        {
+            "type": "The Residence",
+            "amenities": [
+                "In-room temperature control",
+                "Complimentary Wi-Fi",
+                "Tea/Coffee maker",
+                "Complimentary mineral water",
+                "Complimentary seasonal fruits",
+                "Mini bar",
+                "In-room safe",
+                "Complimentary newspaper",
+                "43 inch LED TV",
+                "Sparkling wine on arrival",
+                "Airport transer",
+                "Butlet service on request",
+                "Complementary power breakfast",
+                "Afternoon and evening cocktails",
+                "Private lounge and library",
+                "Experss check-in and check-out"
+            ],
+            "bed": [
+                "Queen"
+            ],
+            "size": "353 sq. ft."
+        }
+    ],
+    "dining": [
+        {
+            "name": "Fire",
+            "cuisine": "Indian",
+            "type": "Fine Dining",
+            "hours": "Lunch: 12:00 PM - 3:00 PM, Dinner: 6:00 PM - 11:00 PM"
+        },
+        {
+            "name": "Aqua",
+            "cuisine": "Italian",
+            "type": "Fine Dining",
+            "hours": "11:00 AM - 12:00 AM"
+        },
+        {
+            "name": "Mist",
+            "cuisine": "Multi-cuisine",
+            "type": "All Day Dining",
+            "hours": "24 hours"
+        },
+        {
+            "name": "Agni",
+            "cuisine": "Bar",
+            "type": "Bar",
+            "hours": "5:00 PM - 12:00 AM"
+        }
+    ],
+    "facilities": [
+        {
+            "name": "Aura Spa",
+            "services": [
+                "Massages",
+                "Scrubs",
+                "Spa Packages"
+            ],
+            "hours": "8:00 AM - 9:00 PM"
+        },
+        {
+            "name": "The Salon",
+            "hours": "8:00 AM - 9:00 PM",
+            "services": [
+                "Haircut",
+                "Hair Styling",
+                "Hair Coloring",
+                "Facials",
+                "Manicure",
+                "Pedicure"
+            ]
+        }
+    ]
+}
