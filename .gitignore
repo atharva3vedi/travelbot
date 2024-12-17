@@ -163,3 +163,4 @@ cython_debug/
 
 *.md
 graph.png
+secrets.toml

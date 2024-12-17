@@ -1,8 +1,10 @@
 import datetime  # Add this line to import datetime
 import streamlit as st
 import os
+from dotenv import load_dotenv
 
 # Set environment variables if not already set
+load_dotenv()
 env_vars = {"GROQ_API_KEY", "TAVILY_API_KEY"}
 for var in env_vars:
     if var not in os.environ:
