@@ -13,7 +13,6 @@ from langchain_core.runnables import RunnableLambda
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
-LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
 
 GROQ_LLM = ChatGroq(model="llama3-70b-8192")
 # ... existing imports ...
