@@ -19,12 +19,15 @@ default_date_range = (today, today + datetime.timedelta(days=7))
 
 # Sidebar UI for user input
 st.sidebar.header("Enter Trip Details")
-origin = st.sidebar.text_input("Your location:", placeholder="Example: New York, USA")
 city = st.sidebar.text_input(
-    "City you are visiting:", placeholder="Example: Paris, France"
+    "City you are visiting:",
+    placeholder="Example: Paris, France",
+    value="New Delhi, India",
 )
 hotel = st.sidebar.text_input(
-    "Hotel you are staying at:", placeholder="Example: Paris Marriott Champs Elysees"
+    "Hotel you are staying at:",
+    placeholder="Example: Paris Marriott Champs Elysees",
+    value="The Park, New Delhi",
 )
 drange = st.sidebar.date_input(
     "Travel dates:", value=default_date_range, min_value=today
@@ -48,9 +51,7 @@ group = st.sidebar.selectbox(
 
 # Run workflow when button is clicked
 if st.sidebar.button("Plan My Trip"):
-    if not origin:
-        st.sidebar.error("Please enter your location.")
-    elif not city:
+    if not city:
         st.sidebar.error("Please enter the city you are visiting.")
     elif not hotel:
         st.sidebar.error("Please enter the hotel you are staying at.")
@@ -62,7 +63,6 @@ if st.sidebar.button("Plan My Trip"):
         st.sidebar.error("Please select your group type.")
     else:
         inputs = {
-            "origin": origin,
             "city": city,
             "hotel": hotel,
             "date_range": str(drange[0]) + " to " + str(drange[1]),
@@ -84,8 +84,7 @@ if st.sidebar.button("Plan My Trip"):
                 # Display trip details in the first column
                 with col1:
                     st.subheader("Trip Details")
-                    st.write(f"🛫 From: {output['origin']}")
-                    st.write(f"🌍 To: {output['city']}")
+                    st.write(f"🌍 City: {output['city']}")
                     st.write(f"📅 Dates: {output['date_range']}")
                     st.write(f"🏨 Hotel: {output['hotel']}")
                     st.write(f"❤️ Interests: {output['interests']}")
@@ -95,6 +94,8 @@ if st.sidebar.button("Plan My Trip"):
                 with col2:
                     with st.expander("City Guide"):
                         st.markdown(output["city_guide"])
+                    with st.expander("Hotel Guest Information"):
+                        st.markdown(output["guest_hotel_info"])
                     st.subheader("Daily Plan")
                     st.markdown(output["travel_plan"])
 

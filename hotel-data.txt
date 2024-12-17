@@ -166,3 +166,6 @@
         }
     ]
 }
+
+
+The guests are staying in room 403, which is a Luxury Room on the 4th floor.

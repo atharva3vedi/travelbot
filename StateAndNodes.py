@@ -3,6 +3,7 @@ from chains import (
     # identify_chain_generator,
     gather_chain_generator,
     plan_chain_generator,
+    guest_hotel_chain_generator,
 )
 from langchain_community.tools.tavily_search import TavilySearchResults
 
@@ -10,7 +11,6 @@ webSearch = TavilySearchResults(k=3)
 
 
 class GraphState(TypedDict):
-    origin: str
     city: str
     hotel: str
     date_range: str
@@ -18,6 +18,7 @@ class GraphState(TypedDict):
     group: str
     num_steps: int
     city_guide: str
+    guest_hotel_info: str
     travel_plan: str
     # Searcheddata:List[str]
 
@@ -69,24 +70,18 @@ def gather_city_guide_node(state):
     print("---GATHER CITY GUIDE NODE---")
 
     # Extract required state values
-    origin = state["origin"]
     city = state["city"]  # Assumes 'city' is already selected and in the state
-    hotel = state["hotel"]
     date_range = state["date_range"]
     interests = state["interests"]
-    group = state["group"]
     num_steps = state["num_steps"]
     num_steps += 1
 
     # Invoke gather_chain_generator
     city_guide = gather_chain_generator.invoke(
         {
-            "origin": origin,
             "city": city,
-            "hotel": hotel,
             "date_range": date_range,
             "interests": interests,
-            "group": group,
         }
     )
 
@@ -104,26 +99,26 @@ def travel_plan_node(state):
     print("---TRAVEL PLAN NODE---")
 
     # Extract required state values
-    origin = state["origin"]
     city = state["city"]  # Assumes 'city' is already selected and in the state
     hotel = state["hotel"]
     date_range = state["date_range"]
     interests = state["interests"]
     group = state["group"]
     city_guide = state["city_guide"]  # Assumes 'city_guide' is already gathered
+    guest_hotel_info = state["guest_hotel_info"]
     num_steps = state["num_steps"]
     num_steps += 1
 
     # Invoke plan_chain_generator
     travel_plan = plan_chain_generator.invoke(
         {
-            "origin": origin,
             "city": city,
             "hotel": hotel,
             "date_range": date_range,
             "interests": interests,
             "group": group,
             "city_guide": city_guide,
+            "guest_hotel_info": guest_hotel_info,
         }
     )
 
@@ -132,6 +127,42 @@ def travel_plan_node(state):
     state["travel_plan"] = travel_plan
 
     return {"travel_plan": travel_plan, "num_steps": num_steps}
+
+
+def guest_hotel_node(state):
+    """
+    Node to combine hotel information with guest information
+    """
+    print("---GUEST HOTEL NODE---")
+
+    # Extract required state values
+    city = state["city"]
+    hotel = state["hotel"]
+    date_range = state["date_range"]
+    group = state["group"]
+    num_steps = state["num_steps"]
+    num_steps += 1
+
+    # Read hotel-data.txt
+    with open("hotel-data.txt", "r") as f:
+        hotel_info = f.read()
+
+    # Invoke guest_hotel_chain
+    guest_hotel_info = guest_hotel_chain_generator.invoke(
+        {
+            "city": city,
+            "hotel": hotel,
+            "hotel_info": hotel_info,
+            "date_range": date_range,
+            "group": group,
+        }
+    )
+
+    # Write result to markdown
+    write_markdown(str(guest_hotel_info), "guest_hotel_info.md")
+    state["guest_hotel_info"] = guest_hotel_info
+
+    return {"guest_hotel_info": guest_hotel_info, "num_steps": num_steps}
 
 
 def state_printer(state):
@@ -144,6 +175,7 @@ def state_printer(state):
     print(f"Hotel: {state.get('hotel', 'N/A')} \n")
     print(f"Group: {state.get('group', 'N/A')} \n")
     print(f"City Guide: {state.get('city_guide', 'N/A')} \n")
+    print(f"Guest Hotel: {state.get('guest_hotel_info', 'N/A')} \n")
     print(f"Travel Plan: {state.get('travel_plan', 'N/A')} \n")
     print(f"Num Steps: {state.get('num_steps', 'N/A')} \n")
     return

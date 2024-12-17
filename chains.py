@@ -99,10 +99,9 @@ gather_chain = PromptTemplate(
 
             City:{city}
             Trip Date: {date_range}
-            Traveling from: {origin}
             Traveler Interests: {interests}
             expected_output=A comprehensive city guide with cultural insights and practical tips.""",
-    input_variable=["origin", "city", "date_range", "interests"],
+    input_variable=["city", "date_range", "interests"],
 )
 gather_chain_generator = gather_chain | GROQ_LLM | StrOutputParser()
 
@@ -111,8 +110,7 @@ plan_chain = PromptTemplate(
             City Guide:
             {city_guide}
     
-            Expand this guide into a full travel itinerary for this time {date_range} with detailed per-day plans, including
-            weather forecasts, places to eat, and a budget breakdown.
+            Expand this guide into a full travel itinerary for this time {date_range} with detailed per-day plans, including weather forecasts, and places to eat.
 
             You MUST suggest actual places to visit and actual restaurants to go to.
 
@@ -123,9 +121,12 @@ plan_chain = PromptTemplate(
 
             Your final answer MUST be a complete expanded travel plan,
             formatted as markdown, encompassing a daily schedule,
-            anticipated weather conditions, and a detailed budget, 
-            ensuring THE BEST TRIP EVER. Be specific and give a reason why 
+            anticipated weather conditions, ensuring THE BEST TRIP EVER. 
+            Be specific and give a reason why 
             you picked each place, what makes them special!
+            
+            Keep the following information from the guest's hotel in mind while working on the travel plan:
+            {guest_hotel_info}
 
             Consider the traveler's group type when planning activities:
             - "solo": Focus on individual activities and personal experiences.
@@ -138,19 +139,54 @@ plan_chain = PromptTemplate(
             - "family with seniors": Suggest activities suitable for older adults.
 
             Trip Date: {date_range}
-            Traveling from: {origin}
             Hotel in the city: {hotel}
             Traveler Interests: {interests}
             Traveler Group: {group}
-            expected_output="A complete 7-day travel plan, formatted as markdown, with a daily schedule and budget.""",
+            expected_output="A complete day-wise travel plan, formatted as markdown, with a daily schedule.""",
     input_variables=[
-        "origin",
         "city",
         "date_range",
         "interests",
         "hotel",
         "group",
         "city_guide",
+        "guest_hotel_info",
     ],
 )
 plan_chain_generator = plan_chain | GROQ_LLM | StrOutputParser()
+
+
+guest_hotel_chain = PromptTemplate(
+    template="""
+            As a hotel guest expert, you are tasked with providing detailed information about the hotel, {hotel}, where the traveler will be staying. You already know the following about the hotel, use this information to enhance the traveler's experience:
+            {hotel_info}
+
+            The hotel is located in {city}, and the traveler will be staying from {date_range}. The traveler is a part of a group type: {group}.
+            
+            Consider the traveler's group type to be one of the following:
+            - "solo": Focus on individual activities and personal experiences.
+            - "couple": Include romantic spots and activities for two.
+            - "friends - male": Suggest activities and places that might appeal to a group of male friends.
+            - "friends - female": Suggest activities and places that might appeal to a group of female friends.
+            - "family": Include activities suitable for a family with all adult members.
+            - "family with kids": Focus on kid-friendly activities and places.
+            - "family with teens": Include activities that would interest teenagers.
+            - "family with seniors": Suggest activities suitable for older adults.
+
+            Your response should include:
+            1. A brief overview of the hotel, including its location, amenities, and any unique features.
+            2. A description of the room where the traveler will be staying, including any special accommodations or requests.
+            3. Recommendations for activities, dining options, and services available at the hotel.
+            4. Any special events or promotions happening during the traveler's stay.
+            5. A personalized welcome message for the traveler, highlighting the best aspects of their stay.
+
+            Your final answer should be a comprehensive overview of the hotel experience, tailored to enhance the traveler's stay and provide a warm welcome.
+
+            Hotel: {hotel}
+            City: {city}
+            Date Range: {date_range}
+            Traveler Group: {group}
+            expected_output="A detailed overview of the hotel experience, including room details, amenities, dining options, and personalized recommendations.""",
+    input_variables=["hotel", "hotel_info", "city", "date_range", "group"],
+)
+guest_hotel_chain_generator = guest_hotel_chain | GROQ_LLM | StrOutputParser()
