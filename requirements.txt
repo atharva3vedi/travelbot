@@ -1,7 +1,7 @@
-langchain-community==0.3.7
-langchain-core==0.3.18
-langchain-groq==0.2.1
-langchain==0.3.7
-langgraph==0.2.48
-streamlit==1.40.1
-typing_extensions==4.12.2
+langchain-community
+langchain-core
+langchain-groq
+langchain
+langgraph
+streamlit
+typing_extensions
