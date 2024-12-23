@@ -66,6 +66,14 @@ def scheduler(
     return scheduled_activities
 
 
+@tool
+def weather_tool(city: str) -> str:
+    """
+    Get the current weather in the city.
+    """
+    return f"Today's temperature in {city} is 25 degrees Celsius."
+
+
 # ==== Hotel Guest Agent ====
 def hotel_guest_prompt_setup(
     hotel: str, city: str, name: str, group: str, num_people: int
@@ -175,11 +183,11 @@ def weather_node(state: AgentState) -> Command:
     print(f"{state=}")
     weather_agent = create_react_agent(
         model=llm,
-        tools=[tavily_search_tool],
+        tools=[weather_tool],
         state_schema=AgentState,
-        state_modifier=f"You are the weather expert for the city of {state["city"]}. Give me the temperature for today. Do not make the values up. Use the search tool to find the information.",
+        state_modifier=f"You are the weather expert for the city of {state["city"]}. Give me the temperature for today. Do not make the values up.",
     )
-    result = weather_agent.invoke(state, debug=True)
+    result = weather_agent.invoke(state)
     print(f"{result=}")
     output = {"weather_info": result["messages"][-1].content}
     state["agent_output"] = (
@@ -200,14 +208,10 @@ def weather_node(state: AgentState) -> Command:
 def create_workflow():
     workflow = StateGraph(AgentState)
 
-    # workflow.add_node("hotel_guest_node", hotel_guest_node)
-    workflow.add_node("weather_node", weather_node)
+    # workflow.add_node(hotel_guest_node)
+    workflow.add_node(weather_node)
 
     # workflow.set_entry_point("hotel_guest_node")
     workflow.set_entry_point("weather_node")
-
-    # workflow.add_edge("hotel_guest_node", END)
-    # workflow.add_edge("hotel_guest_node", "weather_node")
-    workflow.add_edge("weather_node", END)
 
     return workflow.compile()
