@@ -1,6 +1,7 @@
 import datetime  # Add this line to import datetime
-import streamlit as st
 import os
+
+import streamlit as st
 
 # Set environment variables if not already set
 env_vars = {"GROQ_API_KEY", "TAVILY_API_KEY"}
@@ -8,98 +9,43 @@ for var in env_vars:
     if var not in os.environ:
         os.environ[var] = st.secrets[var]
 
-from workflow import app
+from agents import create_workflow
 
 
-# Default date range and today's date for validation
-today = datetime.datetime.now().date()  # Now works because datetime is imported
-default_date_range = (today, today + datetime.timedelta(days=7))
+app = create_workflow()
+if st.button("Plan my stay!"):
+    with st.spinner("Planning your trip..."):
+        try:
+            output = app.invoke(
+                {
+                    "name": "Bob",
+                    "hotel": "The Park, New Delhi",
+                    "city": "New Delhi",
+                    "group": "friends-male",
+                    "num_people": 3,
+                }
+            )
 
-# Sidebar UI for user input
-st.sidebar.header("Enter Trip Details")
-city = st.sidebar.text_input(
-    "City you are visiting:",
-    placeholder="Example: Paris, France",
-    value="New Delhi, India",
-)
-hotel = st.sidebar.text_input(
-    "Hotel you are staying at:",
-    placeholder="Example: Paris Marriott Champs Elysees",
-    value="The Park, New Delhi",
-)
-drange = st.sidebar.date_input(
-    "Travel dates:", value=default_date_range, min_value=today
-)
-interests = st.sidebar.text_area(
-    "Your interests:", placeholder="Example: Museums, Art, Hiking, Food"
-)
-group = st.sidebar.selectbox(
-    "Group type:",
-    [
-        "solo",
-        "couple",
-        "friends - male",
-        "friends - female",
-        "family",
-        "family with kids",
-        "family with teens",
-        "family with seniors",
-    ],
-)
+            # Create main content area
+            st.title("Your Travel Plan")
 
-# Run workflow when button is clicked
-if st.sidebar.button("Plan My Trip"):
-    if not city:
-        st.sidebar.error("Please enter the city you are visiting.")
-    elif not hotel:
-        st.sidebar.error("Please enter the hotel you are staying at.")
-    elif not drange:
-        st.sidebar.error("Please select your travel dates.")
-    elif not interests:
-        st.sidebar.error("Please enter your interests.")
-    elif not group:
-        st.sidebar.error("Please select your group type.")
-    else:
-        inputs = {
-            "city": city,
-            "hotel": hotel,
-            "date_range": str(drange[0]) + " to " + str(drange[1]),
-            "interests": interests,
-            "group": group,
-            "num_steps": 0,
-        }
+            # Display trip plan in the second column
+            # with st.expander(""):
+            #     st.markdown(output["city_guide"])
+            # with st.expander("Hotel Guest Information"):
+            #     st.markdown(output["guest_hotel_info"])
+            st.subheader("State")
+            st.markdown(
+                f"Hotel: {output['hotel']}\nCity: {output['city']}\nGuest Name: {output['name']}\ngroup: {output['group']}\nNumber of People: {output['num_people']}"
+            )
+            st.subheader("Agents Outputs")
+            st.markdown(output["agent_output"])
+            st.subheader("Messages")
+            st.markdown(output["messages"])
 
-        with st.spinner("Planning your trip..."):
-            try:
-                output = app.invoke(inputs)
+            # # Optional: Display debug information in an expander
+            # with st.expander("Debug Information"):
+            #     st.json(output)
 
-                # Create main content area
-                st.title("Your Travel Plan")
-
-                # Create columns for trip details
-                col1, col2 = st.columns([1, 3])
-
-                # Display trip details in the first column
-                with col1:
-                    st.subheader("Trip Details")
-                    st.write(f"🌍 City: {output['city']}")
-                    st.write(f"📅 Dates: {output['date_range']}")
-                    st.write(f"🏨 Hotel: {output['hotel']}")
-                    st.write(f"❤️ Interests: {output['interests']}")
-                    st.write(f"👥 Group: {output['group']}")
-
-                # Display trip plan in the second column
-                with col2:
-                    with st.expander("City Guide"):
-                        st.markdown(output["city_guide"])
-                    with st.expander("Hotel Guest Information"):
-                        st.markdown(output["guest_hotel_info"])
-                    st.subheader("Daily Plan")
-                    st.markdown(output["travel_plan"])
-
-                # Optional: Display debug information in an expander
-                with st.expander("Debug Information"):
-                    st.json(output)
-
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")

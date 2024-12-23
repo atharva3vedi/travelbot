@@ -12,6 +12,7 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import create_react_agent
 from langgraph.types import Command
 from langchain_core.prompts import ChatPromptTemplate
+from langgraph.managed import IsLastStep
 
 GROQ_API_KEY = getenv("GROQ_API_KEY")
 TAVILY_API_KEY = getenv("TAVILY_API_KEY")
@@ -37,6 +38,7 @@ class AgentState(TypedDict):
         ]
     ]
     num_people: int
+    is_last_step: IsLastStep
 
 
 # ==== Define Tools ====
@@ -83,7 +85,6 @@ def hotel_guest_prompt_setup(
             ),
         ]
     )
-    prompt = prompt.format(hotel=hotel, name=name, city=city)
 
     # def get_group_message(group: str, num_people: int) -> str:
     #     if group == "solo":
@@ -108,15 +109,22 @@ def hotel_guest_prompt_setup(
 
     prompt.append(("user", "I am traveling with a group of 3 people friends."))
 
-    prompt.append(
-        (
-            "ai",
-            "Thank you for sharing that with me! How can I assist you during your stay at {hotel}?",
-        )
+    prompt.extend(
+        [
+            (
+                "ai",
+                "Thank you for sharing that with me! How can I assist you during your stay at {hotel}?",
+            ),
+            (
+                "user",
+                "What can I do at the hotel today? What are the activities available? What are the dining options?",
+            ),
+        ]
     )
 
     prompt.append(("placeholder", "{messages}"))
 
+    prompt = prompt.format(hotel=hotel, name=name, city=city)
     return prompt
 
 
@@ -128,7 +136,8 @@ def hotel_guest_model_setup(state: AgentState) -> AgentState:
         state["group"],
         state["num_people"],
     )
-    return prompt.invoke({"messages": state["messages"]})
+    print(f"{prompt=}")
+    return prompt
 
 
 hotel_guest_agent = create_react_agent(
@@ -139,9 +148,68 @@ hotel_guest_agent = create_react_agent(
 )
 
 
+def hotel_guest_node(state: AgentState) -> Command:
+    print("== Hotel Guest Node ==")
+    print(f"{state=}")
+    result = hotel_guest_agent.invoke(state)
+    print(f"{result=}")
+    output = {"hotel_guest_info": str(result["messages"][-1].content)}
+    state["agent_output"] = (
+        state["agent_output"].update(output) if state["agent_output"] else output
+    )
+    print(f"{state=}")
+
+    return Command(
+        update={
+            # share internal message history of research agent with other agents
+            "messages": [],
+            "agent_output": output,
+        },
+        goto=END,
+    )
+
+
 # ==== Weather Agent ====
 weather_agent = create_react_agent(
     model=llm,
     tools=[tavily_search_tool],
-    state_modifier="You are the weather expert for the city. Give the weather forecast for the next 12 hours. Do not make the values up. Use the search tool to find the information.",
+    state_schema=AgentState,
+    state_modifier="You are the weather expert for the city of {city}. Give the weather forecast for the next 12 hours. Do not make the values up. Use the search tool to find the information.",
 )
+
+
+def weather_node(state: AgentState) -> Command:
+    print("== Weather Node ==")
+    print(f"{state=}")
+    result = weather_agent.invoke(state)
+    print(f"{result=}")
+    output = {"weather_info": result["messages"][-1].content}
+    state["agent_output"] = (
+        state["agent_output"].update(output) if state["agent_output"] else output
+    )
+    print(f"{state=}")
+
+    return Command(
+        update={
+            "messages": [],
+            "agent_output": output,
+        },
+        goto=END,
+    )
+
+
+# ==== Define Workflow ====
+def create_workflow():
+    workflow = StateGraph(AgentState)
+
+    # workflow.add_node("hotel_guest_node", hotel_guest_node)
+    workflow.add_node("weather_node", weather_node)
+
+    # workflow.set_entry_point("hotel_guest_node")
+    workflow.set_entry_point("weather_node")
+
+    # workflow.add_edge("hotel_guest_node", END)
+    # workflow.add_edge("hotel_guest_node", "weather_node")
+    workflow.add_edge("weather_node", END)
+
+    return workflow.compile()
