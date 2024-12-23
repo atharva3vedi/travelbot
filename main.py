@@ -23,7 +23,9 @@ if st.button("Plan my stay!"):
                     "city": "New Delhi",
                     "group": "friends-male",
                     "num_people": 3,
-                }
+                    "agent_output": {},
+                },
+                {"recursion_limit": 5},
             )
 
             # Create main content area
@@ -36,12 +38,10 @@ if st.button("Plan my stay!"):
             #     st.markdown(output["guest_hotel_info"])
             st.subheader("State")
             st.markdown(
-                f"Hotel: {output['hotel']}\nCity: {output['city']}\nGuest Name: {output['name']}\ngroup: {output['group']}\nNumber of People: {output['num_people']}"
+                f"Hotel: {output['hotel']}\n\nCity: {output['city']}\n\nGuest Name: {output['name']}\n\ngroup: {output['group']}\n\nNumber of People: {output['num_people']}"
             )
             st.subheader("Agents Outputs")
-            st.markdown(output["agent_output"])
-            st.subheader("Messages")
-            st.markdown(output["messages"])
+            st.markdown([f"## {k} \n\n {v}" for k, v in output["agent_output"].items()])
 
             # # Optional: Display debug information in an expander
             # with st.expander("Debug Information"):

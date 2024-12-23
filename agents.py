@@ -170,18 +170,16 @@ def hotel_guest_node(state: AgentState) -> Command:
 
 
 # ==== Weather Agent ====
-weather_agent = create_react_agent(
-    model=llm,
-    tools=[tavily_search_tool],
-    state_schema=AgentState,
-    state_modifier="You are the weather expert for the city of {city}. Give the weather forecast for the next 12 hours. Do not make the values up. Use the search tool to find the information.",
-)
-
-
 def weather_node(state: AgentState) -> Command:
     print("== Weather Node ==")
     print(f"{state=}")
-    result = weather_agent.invoke(state)
+    weather_agent = create_react_agent(
+        model=llm,
+        tools=[tavily_search_tool],
+        state_schema=AgentState,
+        state_modifier=f"You are the weather expert for the city of {state["city"]}. Give me the temperature for today. Do not make the values up. Use the search tool to find the information.",
+    )
+    result = weather_agent.invoke(state, debug=True)
     print(f"{result=}")
     output = {"weather_info": result["messages"][-1].content}
     state["agent_output"] = (
