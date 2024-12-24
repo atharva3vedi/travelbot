@@ -14,6 +14,7 @@ from agents import create_workflow
 
 app = create_workflow()
 if st.button("Plan my stay!"):
+    print("\n\n\n\n")
     with st.spinner("Planning your trip..."):
         try:
             output = app.invoke(
@@ -25,7 +26,7 @@ if st.button("Plan my stay!"):
                     "num_people": 3,
                     "agent_output": {},
                 },
-                {"recursion_limit": 10},
+                # {"recursion_limit": 10},
             )
 
             # Create main content area
