@@ -1,4 +1,3 @@
-import datetime  # Add this line to import datetime
 import os
 
 import streamlit as st
@@ -11,6 +10,8 @@ for var in env_vars:
 
 from agents import create_workflow
 
+with open("hotel-data/the_park-new_delhi_india.json") as f:
+    hotel_data = f.read()
 
 app = create_workflow()
 if st.button("Plan my stay!"):
@@ -24,7 +25,8 @@ if st.button("Plan my stay!"):
                     "city": "New Delhi",
                     "group": "friends-male",
                     "num_people": 3,
-                    "agent_output": {},
+                    "agent_output": {"hotel_info": hotel_data},
+                    # "agent_output": {},
                 },
                 # {"recursion_limit": 10},
             )
@@ -42,11 +44,9 @@ if st.button("Plan my stay!"):
                 f"Hotel: {output['hotel']}\n\nCity: {output['city']}\n\nGuest Name: {output['name']}\n\ngroup: {output['group']}\n\nNumber of People: {output['num_people']}"
             )
             st.subheader("Agents Outputs")
-            st.markdown(
-                "\n\n".join(
-                    [f"## {k} \n\n {v}" for k, v in output["agent_output"].items()]
-                )
-            )
+            for k, v in output["agent_output"].items():
+                with st.expander(k):
+                    st.write(v)
 
             # # Optional: Display debug information in an expander
             # with st.expander("Debug Information"):

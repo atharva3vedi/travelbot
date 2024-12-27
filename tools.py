@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from langchain_core.tools import tool
+from datetime import datetime, timedelta
 
 
 @tool
@@ -28,7 +29,8 @@ def weather(city: str) -> str:
     """
     Get the current weather in the city.
     """
-    return f"Today's temperature in {city} is 25 degrees Celsius."
+    time = datetime.now() - timedelta(hours=1)
+    return f"Weather in {city}: 25°C, cloudy sky. Last updated at {time.strftime('%H')}:00 IST."
 
 
 @tool
