@@ -1,7 +1,7 @@
-from workflow import app
+from agents import create_workflow
 
 try:
-    graph_image = app.get_graph().draw_mermaid_png()
+    graph_image = create_workflow().get_graph().draw_mermaid_png()
     with open("graph.png", "wb") as f:
         f.write(graph_image)
     print("Graph saved as graph.png")
